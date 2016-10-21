@@ -1,13 +1,16 @@
-package com.ferrarib.nexaaschallenge.listing;
+package com.ferrarib.nexaaschallenge.repositories;
 
 import android.util.Log;
 
-import com.ferrarib.nexaaschallenge.data.ResponseWrapper;
+import com.ferrarib.nexaaschallenge.R;
 import com.ferrarib.nexaaschallenge.data.Repository;
+import com.ferrarib.nexaaschallenge.data.ResponseWrapper;
 import com.ferrarib.nexaaschallenge.data.source.GithubDataSource;
+import com.ferrarib.nexaaschallenge.ui.adapter.RepositoriesAdapter;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.FragmentById;
 import org.androidannotations.annotations.RootContext;
 
 import java.io.IOException;
@@ -23,12 +26,16 @@ import retrofit2.Response;
  */
 
 @EBean
-class ListingPresenter implements ListingContract, Callback<ResponseWrapper> {
+class RepositoriesPresenter implements RepositoriesContract, Callback<ResponseWrapper> {
 
-    @RootContext ListingActivity mActivity;
+    @RootContext RepositoriesActivity mActivity;
+
+    @FragmentById(R.id.fragment) RepositoriesFragment mFragment;
+
     @Bean GithubDataSource mDataSource;
+    @Bean RepositoriesAdapter mAdapter;
 
-    private static final String TAG = ListingPresenter.class.getSimpleName();
+    private static final String TAG = RepositoriesPresenter.class.getSimpleName();
     private List<Repository> mRepositories = new ArrayList<>();
 
     @Override
@@ -43,25 +50,14 @@ class ListingPresenter implements ListingContract, Callback<ResponseWrapper> {
 
     @Override
     public void onResponse(Call<ResponseWrapper> call, Response<ResponseWrapper> response) {
-        if (response.code() != 200)
-            Log.d(TAG, response.code() + " " + call.request().url());
-        else {
-            Log.d(TAG, response.code() + " " + call.request().url());
-            List<Repository> repositories = new ArrayList<>();
-
-            if (response.body().getTotalCount() > 0) {
-                System.out.println(response.body().getTotalCount());
-                repositories = response.body().getItems();
-
-                for (Repository r : repositories) {
-                    Log.d(TAG, r.getName());
-                }
-            } else {
-                System.out.println(response.body().getTotalCount());
-                System.out.println(response.body().getItems().size());
-            }
+        if (response.code() != 200) {
+            Log.e(TAG, "Error while requesting "
+                    + call.request().url() + " with HTTP CODE " + response.code());
         }
+        mRepositories = response.body().getItems();
 
+        mAdapter.setItems(mRepositories);
+        mFragment.setUpRecyclerView(mAdapter);
     }
 
     @Override

@@ -1,10 +1,10 @@
-package com.ferrarib.nexaaschallenge.listing;
+package com.ferrarib.nexaaschallenge.repositories;
 
 /**
  * Created by Bruno Ferrari on 20 October 2016.
  */
 
-public interface ListingContract {
+public interface RepositoriesContract {
 
     void onFragmentLoad();
 
