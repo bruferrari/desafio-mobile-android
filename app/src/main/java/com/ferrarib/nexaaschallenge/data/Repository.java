@@ -162,4 +162,12 @@ public class Repository {
     public String getFullName() {
         return fullName;
     }
+
+    public Long getForksQuantity() {
+        return forks;
+    }
+
+    public Long getStargazersCount() {
+        return stargazersCount;
+    }
 }

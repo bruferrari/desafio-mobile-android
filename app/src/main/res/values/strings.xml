@@ -7,4 +7,5 @@
     <string name="name_surname">Name Surname</string>
     <string name="mock_number_3x">999</string>
     <string name="mock_number_2x">99</string>
+    <string name="loading_msg">Your connection seems to be slow right now, so calm down, take a drink, it may take a while, we\'re loading your content as fast as we can.</string>
 </resources>

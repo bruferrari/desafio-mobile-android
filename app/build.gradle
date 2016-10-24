@@ -6,6 +6,7 @@ ext {
     retrofit = '2.1.0'
     androidAnnotations = '4.1.0'
     annotationApi = '1.2'
+    picasso = '2.5.2'
 }
 
 android {
@@ -39,6 +40,7 @@ dependencies {
     compile "org.androidannotations:androidannotations-api:${androidAnnotations}"
     compile "com.squareup.retrofit2:converter-gson:${retrofit}"
     compile "javax.annotation:javax.annotation-api:${annotationApi}"
+    compile "com.squareup.picasso:picasso:${picasso}"
     apt "org.androidannotations:androidannotations:${androidAnnotations}"
     testCompile 'junit:junit:4.12'
 }

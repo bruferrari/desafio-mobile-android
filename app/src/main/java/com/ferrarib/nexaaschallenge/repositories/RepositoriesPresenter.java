@@ -1,11 +1,14 @@
 package com.ferrarib.nexaaschallenge.repositories;
 
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 
 import com.ferrarib.nexaaschallenge.R;
 import com.ferrarib.nexaaschallenge.data.Repository;
 import com.ferrarib.nexaaschallenge.data.ResponseWrapper;
 import com.ferrarib.nexaaschallenge.data.source.GithubDataSource;
+import com.ferrarib.nexaaschallenge.logger.Logger;
 import com.ferrarib.nexaaschallenge.ui.adapter.RepositoriesAdapter;
 
 import org.androidannotations.annotations.Bean;
@@ -33,31 +36,58 @@ class RepositoriesPresenter implements RepositoriesContract, Callback<ResponseWr
     @FragmentById(R.id.fragment) RepositoriesFragment mFragment;
 
     @Bean GithubDataSource mDataSource;
-    @Bean RepositoriesAdapter mAdapter;
 
     private static final String TAG = RepositoriesPresenter.class.getSimpleName();
+    private static final int FIRST_PAGE = 1;
     private List<Repository> mRepositories = new ArrayList<>();
 
     @Override
     public void onFragmentLoad() {
+        retrieveRepositoriesList(FIRST_PAGE);
+        //TODO: add another operations about loading fragment
+    }
+
+    @Override
+    public void retrieveRepositoriesList(int page) {
         try {
-            Call<ResponseWrapper> call = mDataSource.getRepositories();
+            Call<ResponseWrapper> call = mDataSource.getRepositories(page);
+            Log.d(TAG, "Request: " + call.request().url());
             call.enqueue(this);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    void retrieveRepositoriesList() {
+        try {
+            Call<ResponseWrapper> call = mDataSource.getRepositories(FIRST_PAGE);
+            Log.d(TAG, "Request: " + call.request().url());
+            call.enqueue(new Callback<ResponseWrapper>() {
+                @Override
+                public void onResponse(Call<ResponseWrapper> call, Response<ResponseWrapper> response) {
+                    List<Repository> items = response.body().getItems();
+                    mFragment.hideRepositoriesProgressBar();
+                    mFragment.setRefreshingDone();
+                    mFragment.getAdapter().setItems(items);
+                }
+
+                @Override
+                public void onFailure(Call<ResponseWrapper> call, Throwable t) {
+
+                }
+            });
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
         }
     }
 
     @Override
     public void onResponse(Call<ResponseWrapper> call, Response<ResponseWrapper> response) {
-        if (response.code() != 200) {
-            Log.e(TAG, "Error while requesting "
-                    + call.request().url() + " with HTTP CODE " + response.code());
-        }
+        Logger.httpCodeLogger(TAG, response, call);
         mRepositories = response.body().getItems();
+        mFragment.hideRepositoriesProgressBar();
 
-        mAdapter.setItems(mRepositories);
-        mFragment.setUpRecyclerView(mAdapter);
+        mFragment.getAdapter().updateItems(mRepositories);
     }
 
     @Override

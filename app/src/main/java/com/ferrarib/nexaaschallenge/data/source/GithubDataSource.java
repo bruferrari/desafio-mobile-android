@@ -17,15 +17,16 @@ import retrofit2.Call;
 @EBean
 public class GithubDataSource {
 
-    private static final String BASE_URL = "https://api.github.com/";
+    private static final String API_BASE_URL = "https://api.github.com/";
+    public static final String BASE_URL = "https://github.com/";
 
     private GithubRepository githubRepository;
 
     public GithubDataSource() {
-        githubRepository = ServiceFactory.createRetrofitService(GithubRepository.class, BASE_URL);
+        githubRepository = ServiceFactory.createRetrofitService(GithubRepository.class, API_BASE_URL);
     }
 
-    public Call<ResponseWrapper> getRepositories() throws IOException {
-        return githubRepository.getRepositories("language:Java", "stars", 1);
+    public Call<ResponseWrapper> getRepositories(int page) throws IOException {
+        return githubRepository.getRepositories("language:Java", "stars", page);
     }
 }
