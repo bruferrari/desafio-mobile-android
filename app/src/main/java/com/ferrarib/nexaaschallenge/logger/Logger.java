@@ -24,4 +24,8 @@ public class Logger {
         }
     }
 
+    public static void genericErrorLogger(String clazz, Throwable t) {
+        Log.e(clazz, t.getMessage());
+    }
+
 }

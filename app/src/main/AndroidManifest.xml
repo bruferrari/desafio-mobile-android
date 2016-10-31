@@ -20,6 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".pullrequests.PullRequestsActivity_"
+            android:parentActivityName=".repositories.RepositoriesActivity_"/>
     </application>
 
 </manifest>

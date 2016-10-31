@@ -11,7 +11,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.activity_repositories)
-public class RepositoriesActivity extends AppCompatActivity {
+class RepositoriesActivity extends AppCompatActivity {
 
     @ViewById(R.id.toolbar) Toolbar mToolbar;
 

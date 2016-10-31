@@ -1,15 +1,12 @@
 package com.ferrarib.nexaaschallenge.repositories;
 
-import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.View;
 
 import com.ferrarib.nexaaschallenge.R;
 import com.ferrarib.nexaaschallenge.data.Repository;
-import com.ferrarib.nexaaschallenge.data.ResponseWrapper;
+import com.ferrarib.nexaaschallenge.data.RepositoriesResponseWrapper;
 import com.ferrarib.nexaaschallenge.data.source.GithubDataSource;
 import com.ferrarib.nexaaschallenge.logger.Logger;
-import com.ferrarib.nexaaschallenge.ui.adapter.RepositoriesAdapter;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
@@ -29,7 +26,7 @@ import retrofit2.Response;
  */
 
 @EBean
-class RepositoriesPresenter implements RepositoriesContract, Callback<ResponseWrapper> {
+class RepositoriesPresenter implements RepositoriesContract, Callback<RepositoriesResponseWrapper> {
 
     @RootContext RepositoriesActivity mActivity;
 
@@ -50,7 +47,7 @@ class RepositoriesPresenter implements RepositoriesContract, Callback<ResponseWr
     @Override
     public void retrieveRepositoriesList(int page) {
         try {
-            Call<ResponseWrapper> call = mDataSource.getRepositories(page);
+            Call<RepositoriesResponseWrapper> call = mDataSource.getRepositories(page);
             Log.d(TAG, "Request: " + call.request().url());
             call.enqueue(this);
         } catch (IOException e) {
@@ -60,11 +57,12 @@ class RepositoriesPresenter implements RepositoriesContract, Callback<ResponseWr
 
     void retrieveRepositoriesList() {
         try {
-            Call<ResponseWrapper> call = mDataSource.getRepositories(FIRST_PAGE);
+            Call<RepositoriesResponseWrapper> call = mDataSource.getRepositories(FIRST_PAGE);
             Log.d(TAG, "Request: " + call.request().url());
-            call.enqueue(new Callback<ResponseWrapper>() {
+            call.enqueue(new Callback<RepositoriesResponseWrapper>() {
                 @Override
-                public void onResponse(Call<ResponseWrapper> call, Response<ResponseWrapper> response) {
+                public void onResponse(Call<RepositoriesResponseWrapper> call, Response<RepositoriesResponseWrapper> response) {
+                    Logger.httpCodeLogger(TAG, response, call);
                     List<Repository> items = response.body().getItems();
                     mFragment.hideRepositoriesProgressBar();
                     mFragment.setRefreshingDone();
@@ -72,7 +70,7 @@ class RepositoriesPresenter implements RepositoriesContract, Callback<ResponseWr
                 }
 
                 @Override
-                public void onFailure(Call<ResponseWrapper> call, Throwable t) {
+                public void onFailure(Call<RepositoriesResponseWrapper> call, Throwable t) {
 
                 }
             });
@@ -82,7 +80,7 @@ class RepositoriesPresenter implements RepositoriesContract, Callback<ResponseWr
     }
 
     @Override
-    public void onResponse(Call<ResponseWrapper> call, Response<ResponseWrapper> response) {
+    public void onResponse(Call<RepositoriesResponseWrapper> call, Response<RepositoriesResponseWrapper> response) {
         Logger.httpCodeLogger(TAG, response, call);
         mRepositories = response.body().getItems();
         mFragment.hideRepositoriesProgressBar();
@@ -91,7 +89,7 @@ class RepositoriesPresenter implements RepositoriesContract, Callback<ResponseWr
     }
 
     @Override
-    public void onFailure(Call<ResponseWrapper> call, Throwable t) {
-        Log.d(TAG, t.getMessage());
+    public void onFailure(Call<RepositoriesResponseWrapper> call, Throwable t) {
+        Log.e(TAG, t.getMessage());
     }
 }
